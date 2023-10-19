@@ -39,7 +39,7 @@ class DPP():
         return T
     
     @staticmethod
-    def resolution(C: Set[Proposition], D: Set[Proposition], p: Proposition) -> Union[Set[Proposition], None]:
+    def _resolution(C: Set[Proposition], D: Set[Proposition], p: Proposition) -> Union[Set[Proposition], None]:
         if (p in C and (not p) in D) or ((not p) in C and p in D):
             return (C | D) - (p | (not p))
         return None
@@ -49,7 +49,7 @@ class DPP():
         U = set()
         for pair in combinations(T, 2):
             C, D = pair
-            resolvent = DPP.resolution(C, D, p)
+            resolvent = DPP._resolution(C, D, p)
             if resolvent is not None:
                 U.add(resolvent)
         return U
