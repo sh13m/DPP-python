@@ -11,11 +11,11 @@ class DPP():
     def _has_pnp(clause: FrozenSet[Proposition], p: Proposition) -> bool:
         val = 0
         for prop in clause:
-            if (prop.name == p.name and prop.negation == p.negation):
+            if (prop.name == p.name and prop.t == p.t):
                 val += 1
                 break
         for prop in clause:
-            if (prop.name == p.name and prop.negation != p.negation):
+            if (prop.name == p.name and prop.t != p.t):
                 val += 1
                 break
         return (val == 2)
