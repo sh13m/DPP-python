@@ -1,14 +1,14 @@
 from proposition import *
-from typing import Set, Union
+from typing import Set, FrozenSet, Union
 from itertools import combinations
 
 class DPP():
-    def __init__(self, clauses: Set[Set[Proposition]]) -> None:
+    def __init__(self, clauses: Set[FrozenSet[Proposition]]) -> None:
         self._clauses = clauses 
         self._props = self._get_props()
     
     @staticmethod
-    def _has_pnp(clause: Set[Proposition], p: Proposition) -> bool:
+    def _has_pnp(clause: FrozenSet[Proposition], p: Proposition) -> bool:
         val = 0
         for prop in clause:
             if (prop.name == p.name and prop.negation == p.negation):
@@ -21,7 +21,7 @@ class DPP():
         return (val == 2)
     
     @staticmethod
-    def _rm_pnp(S: Set[Set[Proposition]], p: Proposition) -> Set[Set[Proposition]]:
+    def _rm_pnp(S: Set[FrozenSet[Proposition]], p: Proposition) -> Set[FrozenSet[Proposition]]:
         ans = set()
         for clause in S:
             if not DPP._has_pnp(clause, p):
@@ -29,30 +29,31 @@ class DPP():
         return ans
     
     @staticmethod
-    def _parent_set(S: Set[Set[Proposition]], p: Proposition) -> Set[Set[Proposition]]:
+    def _parent_set(S: Set[FrozenSet[Proposition]], p: Proposition) -> Set[FrozenSet[Proposition]]:
         T = set()
         for clause in S:
             for prop in clause:
                 if (prop.name == p.name):
                     T.add(clause)
                     break
-        return T
+        return frozenset(T)
     
     @staticmethod
-    def _resolution(C: Set[Proposition], D: Set[Proposition], p: Proposition) -> Union[Set[Proposition], None]:
+    def _resolution(C: FrozenSet[Proposition], D: FrozenSet[Proposition], p: Proposition) -> Union[FrozenSet[Proposition], None]:
         if (p in C and (not p) in D) or ((not p) in C and p in D):
-            return (C | D) - (p | (not p))
+            resolvent = (set(C) | set(D)) - {p, not p}
+            return frozenset(resolvent)
         return None
 
     @staticmethod
-    def _resolvent_set(T: Set[Set[Proposition]], p: Proposition) -> Set[Set[Proposition]]:
+    def _resolvent_set(T: Set[FrozenSet[Proposition]], p: Proposition) -> Set[FrozenSet[Proposition]]:
         U = set()
         for pair in combinations(T, 2):
             C, D = pair
             resolvent = DPP._resolution(C, D, p)
             if resolvent is not None:
                 U.add(resolvent)
-        return U
+        return frozenset(U)
     
     def _get_props(self) -> Set[Proposition]:
         prop_names = set()
@@ -62,7 +63,7 @@ class DPP():
         props = [Proposition(name, True) for name in prop_names]
         return props
 
-    def prove(self) -> Set[Set[Proposition]]:
+    def prove(self) -> Set[FrozenSet[Proposition]]:
         S = self._clauses
         T = None
         U = None
