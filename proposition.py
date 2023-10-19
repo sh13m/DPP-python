@@ -12,5 +12,11 @@ class Proposition():
                 val += 1
         return val
 
-    def __not__(self) -> 'Proposition':
+    def negate(self) -> 'Proposition':
         return Proposition(self.name, not self.negation)
+
+    def __eq__(self, other: 'Proposition') -> bool:
+        return (self.name == other.name and self.negation == other.negation)
+
+    def __hash__(self) -> int:
+        return hash((self.name, self.negation))
