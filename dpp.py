@@ -7,14 +7,6 @@ class DPP():
         self._clauses = clauses 
         self._props = self._get_props() 
     
-    def _get_props(self) -> Set[Proposition]:
-        prop_names = set()
-        for clause in self._clauses:
-            for prop in clause:
-                prop_names.add(prop.name)
-        props = [Proposition(name, True) for name in prop_names]
-        return props
-
     def prove(self) -> None:
         S = self._clauses
         T = None
@@ -25,6 +17,14 @@ class DPP():
             U = _resolvent_set(T, p)
             S = (set(S) - set(T)) | set(U)
         print(S)
+    
+    def _get_props(self) -> Set[Proposition]:
+        prop_names = set()
+        for clause in self._clauses:
+            for prop in clause:
+                prop_names.add(prop.name)
+        props = [Proposition(name, True) for name in prop_names]
+        return props
 
 
 def _has_pnp(clause: FrozenSet[Proposition], p: Proposition) -> bool:
