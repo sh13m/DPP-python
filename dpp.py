@@ -36,12 +36,21 @@ class DPP():
                 if (prop.name == p.name):
                     T.add(clause)
                     break
-        return frozenset(T)
+        return T
+    
+    @staticmethod
+    def _contains(clause: FrozenSet[Proposition], p: Proposition):
+        for prop in clause:
+            if (Proposition.compare(prop, p) == 2):
+                return True
+        return False
     
     @staticmethod
     def _resolution(C: FrozenSet[Proposition], D: FrozenSet[Proposition], p: Proposition) -> Union[FrozenSet[Proposition], None]:
-        if (p in C and (not p) in D) or ((not p) in C and p in D):
-            resolvent = (set(C) | set(D)) - {p, not p}
+        if (DPP._contains(C, p) and DPP._contains(D, p.negate())) or (DPP._contains(C, p.negate()) and DPP._contains(D, p)):
+            resolvent = set(C | D)
+            resolvent.remove(p)
+            resolvent.remove(p.negate())
             return frozenset(resolvent)
         return None
 
@@ -53,7 +62,7 @@ class DPP():
             resolvent = DPP._resolution(C, D, p)
             if resolvent is not None:
                 U.add(resolvent)
-        return frozenset(U)
+        return U
     
     def _get_props(self) -> Set[Proposition]:
         prop_names = set()
@@ -63,7 +72,7 @@ class DPP():
         props = [Proposition(name, True) for name in prop_names]
         return props
 
-    def prove(self) -> Set[FrozenSet[Proposition]]:
+    def prove(self) -> None:
         S = self._clauses
         T = None
         U = None
@@ -71,5 +80,5 @@ class DPP():
             S = DPP._rm_pnp(S, p)
             T = DPP._parent_set(S, p)
             U = DPP._resolvent_set(T, p)
-            S = (S - T) | U
+            S = (set(S) - set(T)) | set(U)
         print(S)
