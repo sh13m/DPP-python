@@ -49,7 +49,7 @@ class DPP():
             for p in self._props:
                 print("Eliminating ", p.name, ":")
                 DPP._print(S, f"S_{step_num}")
-                S = _rm_pnp(S, p)
+                S = _rm_pnp(S, self._props)
                 DPP._print(S, f"S'_{step_num}")
                 T = _parent_set(S, p)
                 DPP._print(T, f"T_{step_num}")
@@ -60,7 +60,7 @@ class DPP():
             DPP._print(S, f"S_{step_num}")
         else:
             for p in self._props:
-                S = _rm_pnp(S, p)
+                S = _rm_pnp(S, self._props)
                 T = _parent_set(S, p)
                 U = _resolvent_set(T, p)
                 S = (set(S) - set(T)) | set(U)
@@ -99,11 +99,16 @@ def _has_pnp(clause: FrozenSet[Proposition], p: Proposition) -> bool:
             break
     return (val == 2)
 
-def _rm_pnp(S: Set[FrozenSet[Proposition]], p: Proposition) -> Set[FrozenSet[Proposition]]:
+def _rm_pnp(S: Set[FrozenSet[Proposition]], p_list: List[Proposition]) -> Set[FrozenSet[Proposition]]:
     """Removes clauses that contain p and its complement from S"""
     S_prime = set()
     for clause in S:
-         if not _has_pnp(clause, p):
+        has = False
+        for p in p_list:
+            if _has_pnp(clause, p):
+                has = True
+                break
+        if not has:
             S_prime.add(clause)
     return S_prime
 
