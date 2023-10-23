@@ -16,8 +16,10 @@ class Proposition():
     -------
     compate()
         Compares how similar two propositions are
-    negates()
+    negate()
         Gets negation of a proposition
+    string()
+        Gets string representation of proposition
     
     """
     
@@ -55,6 +57,13 @@ class Proposition():
     def negate(self) -> 'Proposition':
         """Gets the negation of the itself"""
         return Proposition(self.name, not self.t)
+    
+    def string(self) -> str:
+        """Gets string representation of proposition"""
+        if self.t:
+            return self.name
+        else:
+            return "not " + self.name
 
     def __eq__(self, other: 'Proposition') -> bool:
         return (self.name == other.name and self.t == other.t)
