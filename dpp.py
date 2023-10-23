@@ -44,12 +44,13 @@ class DPP():
         S = self._clauses
         T = None
         U = None
+        elimed = set()
         if print_steps:
             step_num = 1
             for p in self._props:
                 print("Eliminating ", p.name, ":")
                 DPP._print(S, f"S_{step_num}")
-                S = _rm_pnp(S, self._props)
+                S = _rm_pnp(S, set(self._props) - elimed)
                 DPP._print(S, f"S'_{step_num}")
                 T = _parent_set(S, p)
                 DPP._print(T, f"T_{step_num}")
@@ -59,11 +60,13 @@ class DPP():
                 step_num += 1
             DPP._print(S, f"S_{step_num}")
         else:
+            elimed = {}
             for p in self._props:
-                S = _rm_pnp(S, self._props)
+                S = _rm_pnp(S, self._props - elimed)
                 T = _parent_set(S, p)
                 U = _resolvent_set(T, p)
                 S = (set(S) - set(T)) | set(U)
+                elimed.add(p)
             print(S)
     
     def _get_props(self) -> Set[Proposition]:
